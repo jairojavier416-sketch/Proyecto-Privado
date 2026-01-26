@@ -8,3 +8,4 @@ Proyecto de Prueba
 - git config --global user.name "tunombredegithub"
 - git checkout -b "tunuevarama"
 - git push -u origin "tunuevarama"
+- git pull origin "nombredelarama" (actualizar archivos que sean subido desde el main)
