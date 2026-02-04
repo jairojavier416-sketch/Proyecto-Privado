@@ -1,5 +1,6 @@
 # Proyecto-Privado
 Proyecto de Prueba 
+
 . git init
 - git status
 - git branch
