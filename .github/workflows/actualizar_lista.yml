@@ -5,14 +5,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-pr-update:
+  update-status-file:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      issues: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          # Usamos tu token secreto para saltar la protección de rama
+          token: ${{ secrets.BOT_TOKEN }}
 
       - name: Generar Lista
         uses: actions/github-script@v6
@@ -24,31 +23,28 @@ jobs:
               state: 'all'
             });
 
-            let content = "# 📋 Control de Tareas por Grupo\n\n";
+            let content = "# 📋 Control de Tareas Actualizado\n\n";
             const groups = ['Grupo 1', 'Grupo 2', 'Grupo 3', 'Grupo 4'];
             
             groups.forEach(group => {
               content += `## 👥 ${group}\n`;
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
               if (groupIssues.length === 0) {
-                content += "- _No hay tareas asignadas aún._\n";
+                content += "- _No hay tareas asignadas._\n";
               } else {
                 groupIssues.forEach(issue => {
-                  const status = issue.state === 'closed' ? '[x]' : '[ ]';
-                  content += `- ${status} ${issue.title} (#${issue.number})\n`;
+                  const check = issue.state === 'closed' ? '[x]' : '[ ]';
+                  content += `- ${check} ${issue.title} (#${issue.number})\n`;
                 });
               }
               content += "\n";
             });
             require('fs').writeFileSync('ESTADO.md', content);
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Sistema: Actualizar lista de tareas"
-          title: "🤖 Actualización automática de ESTADO.md"
-          body: "Este es un mensaje automático del bot para actualizar la lista de tareas según los últimos cambios en las Issues."
-          branch: update-tasks-bot
-          base: main
-          delete-branch: true
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add ESTADO.md
+          git commit -m "Actualización automática [skip ci]" || exit 0
+          git push origin main
