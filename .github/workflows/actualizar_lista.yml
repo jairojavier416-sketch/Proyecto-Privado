@@ -42,13 +42,13 @@ jobs:
             });
             require('fs').writeFileSync('ESTADO.md', content);
 
-     - name: Create Pull Request
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Sistema: Actualizar lista de tareas"
           title: "🤖 Actualización automática de ESTADO.md"
-          body: "Este es un mensaje automático para actualizar la lista de tareas."
+          body: "Este es un mensaje automático del bot para actualizar la lista de tareas según los últimos cambios en las Issues."
           branch: update-tasks-bot
           base: main
           delete-branch: true
