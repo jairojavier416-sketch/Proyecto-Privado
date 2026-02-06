@@ -25,7 +25,7 @@ jobs:
             });
 
             let content = "# 📋 Control de Tareas por Grupo\n\n";
-            const groups = ['Grupo 2', 'Grupo 4'];
+            const groups = ['Grupo 1', 'Grupo 2', 'Grupo 3', 'Grupo 4'];
             
             groups.forEach(group => {
               content += `## 👥 ${group}\n`;
