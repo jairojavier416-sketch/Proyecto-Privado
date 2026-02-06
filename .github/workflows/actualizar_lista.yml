@@ -2,43 +2,32 @@ name: Update Task List
 on:
   issues:
     types: [opened, edited, closed, reopened, labeled, unlabeled]
-  workflow_dispatch: # Esto nos permite darle a un botón para probar
+  workflow_dispatch:
 
 jobs:
   update-status-file:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Verificar archivos
-        run: ls -R # Esto imprimirá en la consola qué archivos ve el bot
-
-      - name: Update ESTADO.md
+      - name: Generar Lista
         uses: actions/github-script@v6
         with:
           script: |
-            const fs = require('fs');
-            const filename = 'ESTADO.md';
-            
-            // Si el archivo no existe, lo creamos nosotros con las marcas
-            if (!fs.existsSync(filename)) {
-              fs.writeFileSync(filename, '# 📋 Control de Tareas\n\n\n');
-            }
-
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'all'
             });
 
-            let content = "";
+            let content = "# 📋 Control de Tareas Actualizado\n\n";
             const groups = ['Grupo 2', 'Grupo 4'];
             
             groups.forEach(group => {
-              content += `### 👥 ${group}\n`;
+              content += `## 👥 ${group}\n`;
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
+              
               if (groupIssues.length === 0) {
-                content += "- _No hay tareas asignadas._\n";
+                content += "- _No hay tareas aún._\n";
               } else {
                 groupIssues.forEach(issue => {
                   const check = issue.state === 'closed' ? '[x]' : '[ ]';
@@ -48,23 +37,12 @@ jobs:
               content += "\n";
             });
 
-            const fileContent = fs.readFileSync(filename, 'utf8');
-            const startMarker = '';
-            const endMarker = '';
-            
-            // Usamos un método más sencillo para reemplazar el texto
-            const parts = fileContent.split(startMarker);
-            const header = parts[0];
-            const footer = parts[1].split(endMarker)[1];
-            
-            const newFileContent = `${header}${startMarker}\n${content}${endMarker}${footer}`;
-            
-            fs.writeFileSync(filename, newFileContent);
+            require('fs').writeFileSync('ESTADO.md', content);
             
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
+          git config --local user.name "GitHub Action"
           git add ESTADO.md
-          git commit -m "Sistema: Actualizado" || echo "Sin cambios"
+          git commit -m "Actualización automática" || echo "Sin cambios"
           git push
