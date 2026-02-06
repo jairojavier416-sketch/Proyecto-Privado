@@ -7,8 +7,12 @@ on:
 jobs:
   update-status-file:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
     steps:
       - uses: actions/checkout@v3
+
       - name: Generar Lista
         uses: actions/github-script@v6
         with:
@@ -19,7 +23,7 @@ jobs:
               state: 'all'
             });
 
-            let content = "# 📋 Control de Tareas Actualizado\n\n";
+            let content = "# 📋 Control de Tareas por Grupo\n\n";
             const groups = ['Grupo 2', 'Grupo 4'];
             
             groups.forEach(group => {
@@ -27,7 +31,7 @@ jobs:
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
               
               if (groupIssues.length === 0) {
-                content += "- _No hay tareas aún._\n";
+                content += "- _No hay tareas asignadas todavía._\n";
               } else {
                 groupIssues.forEach(issue => {
                   const check = issue.state === 'closed' ? '[x]' : '[ ]';
@@ -38,11 +42,11 @@ jobs:
             });
 
             require('fs').writeFileSync('ESTADO.md', content);
-            
-      - name: Commit changes
+
+      - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ESTADO.md
-          git commit -m "Actualización automática" || echo "Sin cambios"
+          git commit -m "Actualización automática de tareas" || exit 0
           git push
