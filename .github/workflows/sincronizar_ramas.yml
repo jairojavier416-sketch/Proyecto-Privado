@@ -1,31 +1,29 @@
-- name: Sync all branches with main
+steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Sync all branches with main
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "Bot de Sincronización"
           
-          # 1. Traer información de todas las ramas remotas
-          git fetch --all
-
-          # 2. Listar ramas remotas de forma limpia y recorrerlas
-          # Este comando ignora main y la referencia HEAD
+          git fetch --all --prune
+          
           for remote_branch in $(git branch -r | grep 'origin/' | grep -v 'origin/main' | grep -v 'HEAD'); do
-            
-            # Limpiamos el nombre para quitar el "origin/"
             branch=${remote_branch#origin/}
+            echo "--------------------------------------------"
+            echo "🔄 Procesando rama: $branch"
             
-            echo "--- Intentando sincronizar: $branch ---"
-            
-            # Creamos la rama local siguiendo a la remota y cambiamos a ella
             git checkout -B $branch $remote_branch
             
-            # Intentamos la fusión
-            if git merge origin/main; then
-              # Si no hay conflictos, subimos los cambios
+            if git merge origin/main --no-edit; then
+              echo "✅ Sincronización exitosa para $branch"
               git push origin $branch
-              echo "✅ $branch sincronizada."
             else
-              # Si hay conflicto, cancelamos ese merge y seguimos con la siguiente
-              echo "❌ Conflicto en $branch. Saltando..."
+              echo "❌ Conflicto detectado en $branch. Saltando rama..."
               git merge --abort
             fi
           done
