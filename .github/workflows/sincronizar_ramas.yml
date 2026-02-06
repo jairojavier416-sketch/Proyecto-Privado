@@ -1,0 +1,38 @@
+name: Auto Sync Branches
+on:
+  push:
+    branches:
+      - main  # Se activa cada vez que main recibe algo nuevo
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          fetch-depth: 0 # Trae todo el historial para poder comparar ramas
+
+      - name: Sync all branches with main
+        run: |
+          # Configuramos el bot
+          git config --local user.email "action@github.com"
+          git config --local user.name "Bot de Sincronización"
+
+          # Obtenemos todas las ramas remotas, excepto main
+          for branch in $(git branch -r | grep -v 'origin/main' | sed 's/origin\///'); do
+            echo "Sincronizando rama: $branch"
+            
+            # Cambiamos a la rama
+            git checkout $branch
+            
+            # Intentamos fusionar main dentro de la rama
+            if git merge origin/main; then
+              git push origin $branch
+              echo "✅ Rama $branch actualizada correctamente."
+            else
+              echo "❌ Conflicto en $branch. Se requiere intervención humana."
+              git merge --abort
+            fi
+          done
