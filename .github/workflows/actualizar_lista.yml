@@ -1,0 +1,45 @@
+name: Update Task List
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+
+jobs:
+  update-status-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Update ESTADO.md
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all'
+            });
+            let content = "";
+            const groups = ['Grupo 2', 'Grupo 4'];
+            groups.forEach(group => {
+              content += `### 👥 ${group}\n`;
+              const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
+              if (groupIssues.length === 0) {
+                content += "- _No hay tareas asignadas._\n";
+              } else {
+                groupIssues.forEach(issue => {
+                  const check = issue.state === 'closed' ? '[x]' : '[ ]';
+                  content += `- ${check} ${issue.title} (#${issue.number})\n`;
+                });
+              }
+              content += "\n";
+            });
+            const fs = require('fs');
+            const fileContent = fs.readFileSync('ESTADO.md', 'utf8');
+            const newFileContent = fileContent.replace(/[\s\S]*/, `\n${content}`);
+            fs.writeFileSync('ESTADO.md', newFileContent);
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add ESTADO.md
+          git commit -m "Sistema: Actualizado" || echo "Sin cambios"
+          git push
