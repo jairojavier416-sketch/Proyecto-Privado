@@ -43,7 +43,7 @@ jobs:
             require('fs').writeFileSync('ESTADO.md', content);
 
       - name: Create Pull Request
-        uses: pequeño-timmy/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v5.
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Sistema: Actualizar lista de tareas"
