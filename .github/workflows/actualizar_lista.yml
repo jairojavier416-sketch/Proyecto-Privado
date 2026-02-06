@@ -10,35 +10,38 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          # Usamos tu token secreto para saltar la protección de rama
           token: ${{ secrets.BOT_TOKEN }}
 
-      - name: Generar Lista
+      - name: Generar Lista de Tareas Pendientes
         uses: actions/github-script@v6
         with:
           script: |
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'all'
+              state: 'open' // <--- AQUÍ está el truco: solo trae las abiertas
             });
 
-            let content = "# 📋 Control de Tareas Actualizado\n\n";
+            let content = "# 📋 Tareas Pendientes por Grupo\n";
+            content += "_Las tareas se eliminan de esta lista automáticamente al cerrarse._\n\n";
+            
             const groups = ['Grupo 1', 'Grupo 2', 'Grupo 3', 'Grupo 4'];
             
             groups.forEach(group => {
               content += `## 👥 ${group}\n`;
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
+              
               if (groupIssues.length === 0) {
-                content += "- _No hay tareas asignadas._\n";
+                content += "- _No hay tareas pendientes en este grupo._\n";
               } else {
                 groupIssues.forEach(issue => {
-                  const check = issue.state === 'closed' ? '[x]' : '[ ]';
-                  content += `- ${check} ${issue.title} (#${issue.number})\n`;
+                  // Ya no necesitamos el check [x] porque solo habrá abiertas [ ]
+                  content += `- [ ] ${issue.title} (#${issue.number})\n`;
                 });
               }
               content += "\n";
             });
+
             require('fs').writeFileSync('ESTADO.md', content);
 
       - name: Commit and Push
@@ -46,5 +49,5 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add ESTADO.md
-          git commit -m "Actualización automática [skip ci]" || exit 0
+          git commit -m "Actualizar lista: tarea completada/eliminada" || exit 0
           git push origin main
