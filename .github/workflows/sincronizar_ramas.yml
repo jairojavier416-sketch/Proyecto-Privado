@@ -1,38 +1,31 @@
-name: Auto Sync Branches
-on:
-  push:
-    branches:
-      - main  # Se activa cada vez que main recibe algo nuevo
-
-jobs:
-  sync-branches:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-          fetch-depth: 0 # Trae todo el historial para poder comparar ramas
-
-      - name: Sync all branches with main
+- name: Sync all branches with main
         run: |
-          # Configuramos el bot
           git config --local user.email "action@github.com"
           git config --local user.name "Bot de Sincronización"
+          
+          # 1. Traer información de todas las ramas remotas
+          git fetch --all
 
-          # Obtenemos todas las ramas remotas, excepto main
-          for branch in $(git branch -r | grep -v 'origin/main' | sed 's/origin\///'); do
-            echo "Sincronizando rama: $branch"
+          # 2. Listar ramas remotas de forma limpia y recorrerlas
+          # Este comando ignora main y la referencia HEAD
+          for remote_branch in $(git branch -r | grep 'origin/' | grep -v 'origin/main' | grep -v 'HEAD'); do
             
-            # Cambiamos a la rama
-            git checkout $branch
+            # Limpiamos el nombre para quitar el "origin/"
+            branch=${remote_branch#origin/}
             
-            # Intentamos fusionar main dentro de la rama
+            echo "--- Intentando sincronizar: $branch ---"
+            
+            # Creamos la rama local siguiendo a la remota y cambiamos a ella
+            git checkout -B $branch $remote_branch
+            
+            # Intentamos la fusión
             if git merge origin/main; then
+              # Si no hay conflictos, subimos los cambios
               git push origin $branch
-              echo "✅ Rama $branch actualizada correctamente."
+              echo "✅ $branch sincronizada."
             else
-              echo "❌ Conflicto en $branch. Se requiere intervención humana."
+              # Si hay conflicto, cancelamos ese merge y seguimos con la siguiente
+              echo "❌ Conflicto en $branch. Saltando..."
               git merge --abort
             fi
           done
