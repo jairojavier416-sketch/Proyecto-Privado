@@ -20,9 +20,9 @@ jobs:
             const fs = require('fs');
             const filename = 'ESTADO.md';
             
-            // Comprobamos si el archivo existe antes de fallar
+            // Si el archivo no existe, lo creamos nosotros con las marcas
             if (!fs.existsSync(filename)) {
-              throw new Error(`¡Error! No encuentro el archivo ${filename} en la raíz.`);
+              fs.writeFileSync(filename, '# 📋 Control de Tareas\n\n\n');
             }
 
             const issues = await github.rest.issues.listForRepo({
@@ -49,16 +49,15 @@ jobs:
             });
 
             const fileContent = fs.readFileSync(filename, 'utf8');
-            
-            // Esto busca los marcadores y solo cambia lo que hay entre ellos
             const startMarker = '';
             const endMarker = '';
             
-            const regex = new RegExp(`${startMarker}[\\s\\S]*${endMarker}`);
-            const newFileContent = fileContent.replace(
-              regex,
-              `${startMarker}\n${content}${endMarker}`
-            );
+            // Usamos un método más sencillo para reemplazar el texto
+            const parts = fileContent.split(startMarker);
+            const header = parts[0];
+            const footer = parts[1].split(endMarker)[1];
+            
+            const newFileContent = `${header}${startMarker}\n${content}${endMarker}${footer}`;
             
             fs.writeFileSync(filename, newFileContent);
             
