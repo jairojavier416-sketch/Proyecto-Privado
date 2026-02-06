@@ -1,18 +1,14 @@
-# 📋 Control de Tareas por Grupo
+# 📋 Control de Tareas Actualizado
 
 ## 👥 Grupo 1
-- [x] Dado (#9)
-- [x] Tarea del Dado (#2)
+- [ ] Prueba T1 (#12)
 
 ## 👥 Grupo 2
-- [x] Tarea de prueba 1 (#7)
-- [x] hola (#6)
-- [x] hola marcar (#5)
-- [x] Hola marca esto (#4)
+- _No hay tareas asignadas._
 
 ## 👥 Grupo 3
-- _No hay tareas asignadas aún._
+- _No hay tareas asignadas._
 
 ## 👥 Grupo 4
-- [x] Titulos (#3)
+- _No hay tareas asignadas._
 
