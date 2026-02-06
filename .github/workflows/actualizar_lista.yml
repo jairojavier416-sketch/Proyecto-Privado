@@ -49,10 +49,17 @@ jobs:
             });
 
             const fileContent = fs.readFileSync(filename, 'utf8');
+            
+            // Esto busca los marcadores y solo cambia lo que hay entre ellos
+            const startMarker = '';
+            const endMarker = '';
+            
+            const regex = new RegExp(`${startMarker}[\\s\\S]*${endMarker}`);
             const newFileContent = fileContent.replace(
-              /[\s\S]*/,
-              `\n${content}`
+              regex,
+              `${startMarker}\n${content}${endMarker}`
             );
+            
             fs.writeFileSync(filename, newFileContent);
             
       - name: Commit changes
