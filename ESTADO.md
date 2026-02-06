@@ -1,7 +1,7 @@
 # 📋 Control de Tareas Actualizado
 
 ## 👥 Grupo 1
-- [ ] Prueba T1 (#12)
+- [x] Prueba T1 (#12)
 
 ## 👥 Grupo 2
 - _No hay tareas asignadas._
