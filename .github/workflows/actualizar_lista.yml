@@ -2,23 +2,38 @@ name: Update Task List
 on:
   issues:
     types: [opened, edited, closed, reopened, labeled, unlabeled]
+  workflow_dispatch: # Esto nos permite darle a un botón para probar
 
 jobs:
   update-status-file:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
+      - name: Verificar archivos
+        run: ls -R # Esto imprimirá en la consola qué archivos ve el bot
+
       - name: Update ESTADO.md
         uses: actions/github-script@v6
         with:
           script: |
+            const fs = require('fs');
+            const filename = 'ESTADO.md';
+            
+            // Comprobamos si el archivo existe antes de fallar
+            if (!fs.existsSync(filename)) {
+              throw new Error(`¡Error! No encuentro el archivo ${filename} en la raíz.`);
+            }
+
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'all'
             });
+
             let content = "";
             const groups = ['Grupo 2', 'Grupo 4'];
+            
             groups.forEach(group => {
               content += `### 👥 ${group}\n`;
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
@@ -32,10 +47,14 @@ jobs:
               }
               content += "\n";
             });
-            const fs = require('fs');
-            const fileContent = fs.readFileSync('ESTADO.md', 'utf8');
-            const newFileContent = fileContent.replace(/[\s\S]*/, `\n${content}`);
-            fs.writeFileSync('ESTADO.md', newFileContent);
+
+            const fileContent = fs.readFileSync(filename, 'utf8');
+            const newFileContent = fileContent.replace(
+              /[\s\S]*/,
+              `\n${content}`
+            );
+            fs.writeFileSync(filename, newFileContent);
+            
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
