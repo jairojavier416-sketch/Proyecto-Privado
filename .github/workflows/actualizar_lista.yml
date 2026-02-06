@@ -5,15 +5,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-status-file:
+  create-pr-update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
       issues: read
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generar Lista
         uses: actions/github-script@v6
@@ -31,7 +30,6 @@ jobs:
             groups.forEach(group => {
               content += `## 👥 ${group}\n`;
               const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
-              
               if (groupIssues.length === 0) {
                 content += "- _No hay tareas asignadas aún._\n";
               } else {
@@ -42,13 +40,15 @@ jobs:
               }
               content += "\n";
             });
-
             require('fs').writeFileSync('ESTADO.md', content);
 
-      - name: Commit and Push
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add ESTADO.md
-          git commit -m "Actualización automática" || exit 0
-          git push
+      - name: Create Pull Request
+        uses: pequeño-timmy/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Sistema: Actualizar lista de tareas"
+          title: "🤖 Actualización automática de ESTADO.md"
+          body: "Este es un mensaje automático del bot para actualizar la lista de tareas según los últimos cambios en las Issues."
+          branch: update-tasks-bot
+          base: main
+          delete-branch: true
