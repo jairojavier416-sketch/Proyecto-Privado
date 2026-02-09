@@ -5,7 +5,7 @@ _Las tareas se eliminan de esta lista automáticamente al cerrarse._
 - _No hay tareas pendientes en este grupo._
 
 ## 👥 Grupo 2
-- [ ] asdadasdad (#16)
+- _No hay tareas pendientes en este grupo._
 
 ## 👥 Grupo 3
 - _No hay tareas pendientes en este grupo._
