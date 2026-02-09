@@ -1,0 +1,39 @@
+name: Generador de Versiones
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generar Lista de Cambios
+        id: changelog
+        run: |
+          # Obtenemos los mensajes de los commits de forma simplificada
+          echo "cambios=$(git log --oneline -5)" >> $GITHUB_OUTPUT
+
+      - name: Crear Release Oficial
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Versión ${{ github.ref_name }}"
+          body: |
+            ## 🚀 Novedades
+            Aquí están los últimos cambios realizados en el proyecto:
+            
+            ${{ steps.changelog.outputs.cambios }}
+            
+            ---
+            _Bot de Versiones Automático_
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
