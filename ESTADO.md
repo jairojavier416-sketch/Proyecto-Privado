@@ -2,14 +2,14 @@
 _Las tareas se eliminan de esta lista automáticamente al cerrarse._
 
 ## 👥 Grupo 1
-- [ ] rge (#17)
+- _No hay tareas pendientes en este grupo._
 
 ## 👥 Grupo 2
-- [ ] rge (#17)
+- _No hay tareas pendientes en este grupo._
 
 ## 👥 Grupo 3
-- [ ] rge (#17)
+- _No hay tareas pendientes en este grupo._
 
 ## 👥 Grupo 4
-- [ ] rge (#17)
+- _No hay tareas pendientes en este grupo._
 
