@@ -1,42 +1,37 @@
-name: Bot Administrador Universal
+name: Bot Admin Merge Directo
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  admin-action:
-    # 1. Seguridad: Solo actua si el comentario es /admin-sync
-    # 2. Autorización: Solo para los 3 encargados
+  force-merge:
+    # Solo si el comentario es /merge y el autor es uno de los 3 elegidos
     if: |
       github.event.issue.pull_request &&
-      github.event.comment.body == '/admin-sync' && 
-      (github.actor == 'jairojavier1963-dot' || 
-       github.actor == 'Encargado2' || 
-       github.actor == 'Encargado3')
+      github.event.comment.body == '/merge' && 
+      (github.actor == 'TuUsuario' || 
+       github.actor == 'Compañero2' || 
+       github.actor == 'Compañero3')
     
     runs-on: ubuntu-latest
     steps:
-      - name: Obtener información de la rama
-        id: branch_info
-        uses: xt0rted/pull-request-comment-branch@v2
-
-      - name: Checkout con Poderes de Admin
-        uses: actions/checkout@v4
+      - name: Forzar el Merge en Main
+        uses: actions/github-script@v6
         with:
-          token: ${{ secrets.ADMIN_BOT_TOKEN }}
-          ref: ${{ steps.branch_info.outputs.head_ref }}
-          fetch-depth: 0
+          github-token: ${{ secrets.ADMIN_BOT_TOKEN }}
+          script: |
+            const prNumber = context.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
 
-      - name: Forzar Sincronización (Cualquier Rama)
-        run: |
-          git config --global user.name "Bot Administrador"
-          git config --global user.email "bot@admin.com"
-          
-          # Detecta automáticamente en qué rama estamos trabajando
-          CURRENT_BRANCH=${{ steps.branch_info.outputs.head_ref }}
-          
-          echo "Sincronizando la rama $CURRENT_BRANCH con main..."
-          
-          git fetch origin main
-          git reset --hard origin/main
-          git push origin $CURRENT_BRANCH --force
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              merge_method: 'merge' // O 'squash' si prefieres
+            });
+            
+            console.log(`PR #${prNumber} fusionado a la fuerza por admin.`);
