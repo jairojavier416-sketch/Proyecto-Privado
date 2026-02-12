@@ -8,7 +8,7 @@ jobs:
     # AQUÍ pones los nombres de usuario de GitHub de los 3 encargados
     if: |
       github.event.comment.body == '/sincronizar' && 
-      (github.actor == 'TuUsuarioGitHub' || 
+      (github.actor == 'jairojavier1963-dot' || 
        github.actor == 'Compañero1' || 
        github.actor == 'Compañero2')
     
