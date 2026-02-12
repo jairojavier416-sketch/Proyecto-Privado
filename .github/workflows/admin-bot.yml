@@ -1,0 +1,22 @@
+name: Bot de Encargados
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  permisos-admin:
+    # AQUÍ pones los nombres de usuario de GitHub de los 3 encargados
+    if: |
+      github.event.comment.body == '/sincronizar' && 
+      (github.actor == 'TuUsuarioGitHub' || 
+       github.actor == 'Compañero1' || 
+       github.actor == 'Compañero2')
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ejecutar limpieza con Token de Admin
+        run: |
+          echo "Acceso concedido a ${{ github.actor }}"
+          # Aquí el bot usa el secreto guardado por el admin
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_BOT_TOKEN }}
