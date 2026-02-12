@@ -10,7 +10,7 @@ jobs:
     if: |
       github.event.issue.pull_request &&
       github.event.comment.body == '/admin-sync' && 
-      (github.actor == 'TuUsuario' || 
+      (github.actor == 'jairojavier1963-dot' || 
        github.actor == 'Encargado2' || 
        github.actor == 'Encargado3')
     
