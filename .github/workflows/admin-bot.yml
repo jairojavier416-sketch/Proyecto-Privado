@@ -9,7 +9,7 @@ jobs:
     if: |
       github.event.issue.pull_request &&
       github.event.comment.body == '/merge' && 
-      (github.actor == 'TuUsuario' || 
+      (github.actor == 'jairojavier1963-dot' || 
        github.actor == 'Compañero2' || 
        github.actor == 'Compañero3')
     
