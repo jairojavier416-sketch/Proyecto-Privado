@@ -10,7 +10,7 @@ jobs:
       github.event.issue.pull_request &&
       github.event.comment.body == '/merge' && 
       (github.actor == 'jairojavier1963-dot' || 
-       github.actor == 'Compañero2' || 
+       github.actor == 'tristanrodriguezrodriguez12-prog' || 
        github.actor == 'Compañero3')
     
     runs-on: ubuntu-latest
