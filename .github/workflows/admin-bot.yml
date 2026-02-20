@@ -18,7 +18,7 @@ jobs:
       - name: Forzar el Merge en Main
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.BOT_TOKEN }}
+          github-token: ${{ secrets.ADMIN_BOT_TOKEN }}
           script: |
             const prNumber = context.issue.number;
             const { data: pr } = await github.rest.pulls.get({
