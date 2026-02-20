@@ -18,13 +18,11 @@ jobs:
           script: |
             const fs = require("fs");
 
-            // Ruta absoluta al JSON de grupos
+            // Leer grupos desde JSON
             const groupsFile = `${process.env.GITHUB_WORKSPACE}/grupos.json`;
-
             if (!fs.existsSync(groupsFile)) {
               throw new Error(`No se encuentra el archivo grupos.json en la raíz del repo: ${groupsFile}`);
             }
-
             const groups = JSON.parse(fs.readFileSync(groupsFile, "utf8"));
 
             // Obtener issues abiertos
@@ -38,8 +36,7 @@ jobs:
 
             function getPriority(issue) {
               const label = issue.labels.find(l => l.name.startsWith("Prioridad:"));
-              if (!label) return "Media";
-              return label.name.replace("Prioridad: ", "");
+              return label ? label.name.replace("Prioridad: ", "") : "Media";
             }
 
             function priorityWeight(priority) {
@@ -63,42 +60,39 @@ jobs:
                 priorityWeight(getPriority(a)) - priorityWeight(getPriority(b))
               );
 
-              // INDIVIDUALES
               for (const issue of groupIssues) {
                 const labels = issue.labels.map(l => l.name);
                 const esGrupal = labels.includes("Tipo: Grupal");
 
-                if (esGrupal) continue;
-
-                const allCompleted = members.every(member =>
-                  labels.includes(`Completado: ${member}`)
-                );
-
-                if (allCompleted) continue;
-
-                for (const member of members) {
-                  const completado = labels.includes(`Completado: ${member}`);
-                  if (!completado) {
-                    content += `### 👤 ${member}\n`;
+                if (esGrupal) {
+                  // Tarea grupal
+                  const completadoGrupo = labels.includes(`Completado: ${groupName}`);
+                  if (!completadoGrupo) {
+                    content += `### 📌 Tareas Grupales\n`;
                     content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n\n`;
                   }
+                  continue;
                 }
-              }
 
-              // GRUPALES
-              const groupTasks = groupIssues.filter(issue => {
-                const labels = issue.labels.map(l => l.name);
-                const esGrupal = labels.includes("Tipo: Grupal");
-                const completadoGrupo = labels.includes(`Completado: ${groupName}`);
-                return esGrupal && !completadoGrupo;
-              });
-
-              if (groupTasks.length > 0) {
-                content += `### 📌 Tareas Grupales\n`;
-                groupTasks.forEach(issue => {
-                  content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n`;
-                });
-                content += "\n";
+                // Tarea individual
+                const userLabel = labels.find(l => l.startsWith("Usuario: "));
+                if (userLabel) {
+                  const username = userLabel.replace("Usuario: ", "");
+                  const completado = labels.includes(`Completado: ${username}`);
+                  if (!completado) {
+                    content += `### 👤 ${username}\n`;
+                    content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n\n`;
+                  }
+                } else {
+                  // Si no hay label de usuario, asigna a todos los miembros del grupo
+                  for (const member of members) {
+                    const completado = labels.includes(`Completado: ${member}`);
+                    if (!completado) {
+                      content += `### 👤 ${member}\n`;
+                      content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n\n`;
+                    }
+                  }
+                }
               }
 
               content += "\n";
