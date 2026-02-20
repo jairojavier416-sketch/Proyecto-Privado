@@ -18,8 +18,14 @@ jobs:
           script: |
             const fs = require("fs");
 
-            // Leer archivo grupos.json
-            const groups = JSON.parse(fs.readFileSync("grupos.json", "utf8"));
+            // Leer archivo grupos.json desde la raíz del repo
+            const groupsFile = `${process.env.GITHUB_WORKSPACE}/grupos.json`;
+
+            if (!fs.existsSync(groupsFile)) {
+              throw new Error(`No se encuentra el archivo grupos.json en la raíz del repo: ${groupsFile}`);
+            }
+
+            const groups = JSON.parse(fs.readFileSync(groupsFile, "utf8"));
 
             // Obtener issues abiertos
             const issues = await github.rest.issues.listForRepo({
@@ -98,7 +104,7 @@ jobs:
               content += "\n";
             }
 
-            fs.writeFileSync("ESTADO.md", content);
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/ESTADO.md`, content);
 
       - name: Commit and Push
         run: |
