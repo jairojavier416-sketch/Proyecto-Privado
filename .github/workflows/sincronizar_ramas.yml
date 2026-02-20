@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.BOT_TOKEN }}
+          token: ${{ secrets.ADMIN_BOT_TOKEN }}
           fetch-depth: 0
 
       - name: Sync all branches with main
