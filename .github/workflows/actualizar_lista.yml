@@ -18,7 +18,7 @@ jobs:
           script: |
             const fs = require("fs");
 
-            // Leer archivo grupos.json desde la raíz del repo
+            // Ruta absoluta al JSON de grupos
             const groupsFile = `${process.env.GITHUB_WORKSPACE}/grupos.json`;
 
             if (!fs.existsSync(groupsFile)) {
