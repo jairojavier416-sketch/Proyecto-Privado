@@ -16,38 +16,105 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            const org = context.repo.owner;
+
+            const groups = {
+              "Grupo 1": "grupo-1",
+              "Grupo 2": "grupo-2",
+              "Grupo 3": "grupo-3",
+              "Grupo 4": "grupo-4",
+              "Grupo 5": "grupo-5"
+            };
+
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open' // <--- AQUÍ está el truco: solo trae las abiertas
+              state: "open"
             });
 
-            let content = "# 📋 Tareas Pendientes por Grupo\n";
-            content += "_Las tareas se eliminan de esta lista automáticamente al cerrarse._\n\n";
-            
-            const groups = ['Grupo 1', 'Grupo 2', 'Grupo 3', 'Grupo 4'];
-            
-            groups.forEach(group => {
-              content += `## 👥 ${group}\n`;
-              const groupIssues = issues.data.filter(i => i.labels.some(l => l.name === group));
-              
-              if (groupIssues.length === 0) {
-                content += "- _No hay tareas pendientes en este grupo._\n";
-              } else {
-                groupIssues.forEach(issue => {
-                  // Ya no necesitamos el check [x] porque solo habrá abiertas [ ]
-                  content += `- [ ] ${issue.title} (#${issue.number})\n`;
-                });
+            let content = "# 📋 Tareas Pendientes\n\n";
+
+            function getPriority(issue) {
+              const label = issue.labels.find(l => l.name.startsWith("Prioridad:"));
+              if (!label) return "Media";
+              return label.name.replace("Prioridad: ", "");
+            }
+
+            function priorityWeight(priority) {
+              if (priority === "Alta") return 1;
+              if (priority === "Media") return 2;
+              if (priority === "Baja") return 3;
+              return 4;
+            }
+
+            for (const groupName in groups) {
+              const teamSlug = groups[groupName];
+
+              // Obtener miembros del team
+              const members = await github.rest.teams.listMembersInOrg({
+                org,
+                team_slug: teamSlug
+              });
+
+              const groupIssues = issues.data.filter(issue =>
+                issue.labels.some(l => l.name === groupName)
+              );
+
+              if (groupIssues.length === 0) continue;
+
+              content += `## 👥 ${groupName}\n\n`;
+
+              groupIssues.sort((a, b) =>
+                priorityWeight(getPriority(a)) - priorityWeight(getPriority(b))
+              );
+
+              // INDIVIDUALES
+              for (const issue of groupIssues) {
+                const labels = issue.labels.map(l => l.name);
+                const esGrupal = labels.includes("Tipo: Grupal");
+
+                if (esGrupal) continue;
+
+                const allCompleted = members.data.every(member =>
+                  labels.includes(`Completado: ${member.login}`)
+                );
+
+                if (allCompleted) continue;
+
+                for (const member of members.data) {
+                  const completado = labels.includes(`Completado: ${member.login}`);
+                  if (!completado) {
+                    content += `### 👤 ${member.login}\n`;
+                    content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n\n`;
+                  }
+                }
               }
-              content += "\n";
-            });
 
-            require('fs').writeFileSync('ESTADO.md', content);
+              // GRUPALES
+              const groupTasks = groupIssues.filter(issue => {
+                const labels = issue.labels.map(l => l.name);
+                const esGrupal = labels.includes("Tipo: Grupal");
+                const completadoGrupo = labels.includes(`Completado: ${groupName}`);
+                return esGrupal && !completadoGrupo;
+              });
+
+              if (groupTasks.length > 0) {
+                content += `### 📌 Tareas Grupales\n`;
+                groupTasks.forEach(issue => {
+                  content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n`;
+                });
+                content += "\n";
+              }
+
+              content += "\n";
+            }
+
+            require("fs").writeFileSync("ESTADO.md", content);
 
       - name: Commit and Push
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
           git add ESTADO.md
-          git commit -m "Actualizar lista: tarea completada/eliminada" || exit 0
+          git commit -m "Actualizar lista de tareas" || exit 0
           git push origin main
