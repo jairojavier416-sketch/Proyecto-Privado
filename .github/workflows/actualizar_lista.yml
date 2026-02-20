@@ -16,16 +16,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const org = context.repo.owner;
+            const fs = require("fs");
 
-            const groups = {
-              "Grupo 1": "grupo-1",
-              "Grupo 2": "grupo-2",
-              "Grupo 3": "grupo-3",
-              "Grupo 4": "grupo-4",
-              "Grupo 5": "grupo-5"
-            };
+            // Leer archivo grupos.json
+            const groups = JSON.parse(fs.readFileSync("grupos.json", "utf8"));
 
+            // Obtener issues abiertos
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -48,14 +44,7 @@ jobs:
             }
 
             for (const groupName in groups) {
-              const teamSlug = groups[groupName];
-
-              // Obtener miembros del team
-              const members = await github.rest.teams.listMembersInOrg({
-                org,
-                team_slug: teamSlug
-              });
-
+              const members = groups[groupName];
               const groupIssues = issues.data.filter(issue =>
                 issue.labels.some(l => l.name === groupName)
               );
@@ -75,16 +64,16 @@ jobs:
 
                 if (esGrupal) continue;
 
-                const allCompleted = members.data.every(member =>
-                  labels.includes(`Completado: ${member.login}`)
+                const allCompleted = members.every(member =>
+                  labels.includes(`Completado: ${member}`)
                 );
 
                 if (allCompleted) continue;
 
-                for (const member of members.data) {
-                  const completado = labels.includes(`Completado: ${member.login}`);
+                for (const member of members) {
+                  const completado = labels.includes(`Completado: ${member}`);
                   if (!completado) {
-                    content += `### 👤 ${member.login}\n`;
+                    content += `### 👤 ${member}\n`;
                     content += `- (${getPriority(issue)}) ${issue.title} (#${issue.number})\n\n`;
                   }
                 }
@@ -109,7 +98,7 @@ jobs:
               content += "\n";
             }
 
-            require("fs").writeFileSync("ESTADO.md", content);
+            fs.writeFileSync("ESTADO.md", content);
 
       - name: Commit and Push
         run: |
