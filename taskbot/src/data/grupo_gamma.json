@@ -1,0 +1,11 @@
+{
+  "id": "gamma",
+  "name": "Grupo Gamma",
+  "color": "#A29BFE",
+  "emoji": "🟣",
+  "members": [
+    { "id": "gamma_1", "name": "Laura Sánchez", "role": "Líder", "email": "laura.sanchez@equipo.com" },
+    { "id": "gamma_2", "name": "Pedro Ramírez", "role": "Backend", "email": "pedro.ramirez@equipo.com" },
+    { "id": "gamma_3", "name": "Isabel Vega", "role": "Frontend", "email": "isabel.vega@equipo.com" }
+  ]
+}

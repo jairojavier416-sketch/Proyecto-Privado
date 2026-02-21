@@ -1,0 +1,11 @@
+{
+  "id": "beta",
+  "name": "Grupo Beta",
+  "color": "#4ECDC4",
+  "emoji": "🔷",
+  "members": [
+    { "id": "beta_1", "name": "María Torres", "role": "Líder", "email": "maria.torres@equipo.com" },
+    { "id": "beta_2", "name": "Juan Pérez", "role": "Analista", "email": "juan.perez@equipo.com" },
+    { "id": "beta_3", "name": "Sofía Mendez", "role": "QA", "email": "sofia.mendez@equipo.com" }
+  ]
+}

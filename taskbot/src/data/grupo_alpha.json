@@ -1,0 +1,11 @@
+{
+  "id": "alpha",
+  "name": "Grupo Alpha",
+  "color": "#FF6B6B",
+  "emoji": "🔺",
+  "members": [
+    { "id": "alpha_1", "name": "Ana García", "role": "Líder", "email": "ana.garcia@equipo.com" },
+    { "id": "alpha_2", "name": "Carlos López", "role": "Desarrollador", "email": "carlos.lopez@equipo.com" },
+    { "id": "alpha_3", "name": "Marta Ruiz", "role": "Diseñadora", "email": "marta.ruiz@equipo.com" }
+  ]
+}
