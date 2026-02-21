@@ -1,0 +1,54 @@
+[
+  {
+    "id": "task_001",
+    "title": "Revisar documentación API",
+    "description": "Actualizar todos los endpoints del sistema con la nueva versión.",
+    "priority": "alta",
+    "groupId": "alpha",
+    "assignedTo": "todos",
+    "createdAt": "2025-02-01T09:00:00Z",
+    "completed": false,
+    "completedBy": null,
+    "completedAt": null,
+    "createdBy": "alpha_1"
+  },
+  {
+    "id": "task_002",
+    "title": "Configurar servidor de staging",
+    "description": "Solo Carlos se encarga de esta tarea de infraestructura.",
+    "priority": "alta",
+    "groupId": "alpha",
+    "assignedTo": "alpha_2",
+    "createdAt": "2025-02-02T10:30:00Z",
+    "completed": false,
+    "completedBy": null,
+    "completedAt": null,
+    "createdBy": "alpha_1"
+  },
+  {
+    "id": "task_003",
+    "title": "Preparar mockups de UI",
+    "description": "Diseño de pantallas para el sprint siguiente.",
+    "priority": "media",
+    "groupId": "beta",
+    "assignedTo": "todos",
+    "createdAt": "2025-02-03T08:00:00Z",
+    "completed": false,
+    "completedBy": null,
+    "completedAt": null,
+    "createdBy": "beta_1"
+  },
+  {
+    "id": "task_004",
+    "title": "Actualizar dependencias npm",
+    "description": "Revisar y actualizar paquetes con vulnerabilidades.",
+    "priority": "baja",
+    "groupId": "gamma",
+    "assignedTo": "gamma_2",
+    "createdAt": "2025-02-04T11:00:00Z",
+    "completed": true,
+    "completedBy": "gamma_2",
+    "completedAt": "2025-02-05T15:00:00Z",
+    "createdBy": "gamma_1"
+  }
+]

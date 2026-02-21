@@ -1,0 +1,51 @@
+.task-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); display: flex; overflow: hidden;
+  transition: all 0.2s;
+}
+.task-card:hover { border-color: var(--priority-color, var(--border)); box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+.task-card.completed { opacity: 0.55; }
+
+.tc-priority-bar { width: 3px; background: var(--priority-color); flex-shrink: 0; }
+.tc-main { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.9rem 1rem; flex: 1; min-width: 0; }
+
+.tc-check-area { flex-shrink: 0; padding-top: 2px; }
+.tc-checkbox {
+  width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
+  background: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.75rem; font-weight: 700; transition: all 0.2s;
+}
+.tc-checkbox:hover { border-color: var(--group-color, var(--text2)); }
+
+.tc-content { flex: 1; min-width: 0; cursor: pointer; }
+.tc-title-row { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+.tc-title { font-weight: 600; font-size: 0.95rem; line-height: 1.4; }
+.task-card.completed .tc-title { text-decoration: line-through; }
+
+.tc-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-left: auto; }
+.priority-badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.assign-badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; border: 1px solid; white-space: nowrap; }
+.assign-all { border-color: var(--border); color: var(--text2); }
+
+.tc-desc { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text2); margin-top: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-desc.expanded { white-space: normal; }
+.tc-meta { display: flex; gap: 1rem; margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text2); flex-wrap: wrap; }
+
+.tc-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+.tc-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+.tc-btn:hover { background: var(--surface2); }
+.tc-btn-del:hover { border-color: #ff4757; background: #ff475715; }
+
+/* Edit form */
+.edit-form { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
+.edit-input, .edit-textarea {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 0.4rem 0.6rem; font-family: var(--font-head); font-size: 0.9rem; width: 100%;
+}
+.edit-textarea { resize: vertical; }
+.edit-input:focus, .edit-textarea:focus { outline: none; border-color: var(--text2); }
+.edit-priority-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text2); }
+.ep-btn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 3px 8px; border-radius: 12px; cursor: pointer; font-family: var(--font-head); font-size: 0.8rem; transition: all 0.2s; }
+.edit-actions { display: flex; gap: 0.5rem; }
+.btn-save { border: none; color: #000; padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; }
+.btn-cancel { background: none; border: 1px solid var(--border); color: var(--text2); padding: 0.4rem 0.9rem; border-radius: 6px; cursor: pointer; font-family: var(--font-head); font-size: 0.85rem; }

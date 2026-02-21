@@ -1,0 +1,11 @@
+{
+  "id": "omega",
+  "name": "Grupo Omega",
+  "color": "#55EFC4",
+  "emoji": "🟢",
+  "members": [
+    { "id": "omega_1", "name": "Valentina Cruz", "role": "Líder", "email": "valentina.cruz@equipo.com" },
+    { "id": "omega_2", "name": "Miguel Herrera", "role": "Data Engineer", "email": "miguel.herrera@equipo.com" },
+    { "id": "omega_3", "name": "Natalia Flores", "role": "UX Research", "email": "natalia.flores@equipo.com" }
+  ]
+}
